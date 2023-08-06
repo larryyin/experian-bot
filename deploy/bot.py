@@ -12,21 +12,24 @@ _ = load_dotenv(find_dotenv()) # read local .env file
 openai.api_key  = os.environ['OPENAI_API_KEY']
 hf_api_key = os.environ['HF_API_KEY']
 
+host = os.environ['PGVECTOR_HOST']
+port = os.environ['PGVECTOR_PORT']
+database_name = os.environ['PGVECTOR_DATABASE']
+user = os.environ['PGVECTOR_USER']
+passwd = os.environ['PGVECTOR_PASSWD']
+
+bot_name = "Experian Bot V0.2"
+bot_desc = "Experian's chatbot, from its public webcrawl, serves a credit feast for all."
+
 embedding = OpenAIEmbeddings()
 
-host = "experian-ai-instance-1.cyqxijnzhxga.us-west-2.rds.amazonaws.com"
-port = "5432"
-database_name = "experian"
-user = "larryyin"
-passwd = "experianai"
-
 CONNECTION_STRING = PGVector.connection_string_from_db_params(
-    driver=os.environ.get("PGVECTOR_DRIVER", "psycopg2"),
-    host=os.environ.get("PGVECTOR_HOST", host),
-    port=int(os.environ.get("PGVECTOR_PORT", port)),
-    database=os.environ.get("PGVECTOR_DATABASE", database_name),
-    user=os.environ.get("PGVECTOR_USER", user),
-    password=os.environ.get("PGVECTOR_PASSWORD", passwd),
+    driver="psycopg2",
+    host=host,
+    port=int(port),
+    database=database_name,
+    user=user,
+    password=passwd,
 )
 
 COLLECTION_NAME = "experian230725"
@@ -56,7 +59,7 @@ qa = ConversationalRetrievalChain.from_llm(
 )
 
 with gr.Blocks() as demo:
-    gr.Markdown("# Experian Bot V0.2")
+    gr.Markdown(f"# {bot_name}\n\n{bot_desc}")
     chatbot = gr.Chatbot()
     msg = gr.Textbox(label="Type your message (Shift + Enter to submit)", lines=6)
     submit = gr.Button("Submit")
